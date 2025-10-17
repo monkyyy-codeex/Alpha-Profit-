@@ -383,6 +383,32 @@
   // help button
   document.getElementById("helpBtn").onclick = () =>
     alert("Need help? Contact support@alphaprofit.com");
+    <!-- Firebase SDKs -->
+    
+  type="module"
+  // Import the Firebase SDKs
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+  import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+
+  // Your Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyCJLryX86ckme9PA6LrSku9F47CV97UFYc",
+    authDomain: "alphaprofit-fe885.firebaseapp.com",
+    projectId: "alphaprofit-fe885",
+    storageBucket: "alphaprofit-fe885.firebasestorage.app",
+    messagingSenderId: "363819825243",
+    appId: "1:363819825243:web:d4843c2f8ea8818dd7e77e",
+    measurementId: "G-GPHD2Y9J6R"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  console.log("🔥 Firebase connected successfully");
+
 </script>
 
 </body>
