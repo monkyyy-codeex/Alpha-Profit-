@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>AlphaProfit — Investor Dashboard</title>
+
+  <!-- fonts & icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+  <!-- app styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="bg-overlay" aria-hidden="true"></div>
+
+  <div class="app">
+    <header>
+      <div class="brand">
+        <img src="alpha logo.png" alt="AlphaProfit logo" class="brand-logo">
+        <div>
+          <div class="title">ALPHAPROFIT</div>
+          <div class="sub">AI • CRYPTO • FOREX</div>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <div class="icon-bell" title="Notifications" onclick="showToast('🔔 No new notifications')"><i class="fas fa-bell"></i></div>
+        <button class="btn-logout" onclick="logout()">Log Out</button>
+      </div>
+    </header>
+
+    <main>
+      <div class="welcome">
+        <h1 id="welcomeTitle">Welcome Alpha Trader</h1>
+        <p id="welcomeDesc">Pick a plan, upload a receipt, wait for admin verification, then activate the plan.</p>
+      </div>
+
+      <nav class="tabs" role="navigation" aria-label="Main Tabs">
+        <button class="tab-btn active" id="tabDashboard" onclick="openTab('dashboard')">Dashboard</button>
+        <button class="tab-btn" id="tabDeposit" onclick="openTab('deposit')">Deposit Capital</button>
+        <button class="tab-btn" id="tabPlans" onclick="openTab('plans')">Staking Plans</button>
+        <button class="tab-btn" id="tabWithdraw" onclick="openTab('withdraw')">Withdraw</button>
+        <button class="tab-btn" id="tabReferral" onclick="openTab('referral')">Referrals</button>
+        <button class="tab-btn" id="tabFAQ" onclick="openTab('faq')">FAQ</button>
+      </nav>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="section active">
+        <div class="card stats-card">
+          <div class="stat-item">
+            <div class="label">Wallet Balance</div>
+            <div id="statWallet" class="stat-value">₱0.00</div>
+          </div>
+          <div class="stat-item">
+            <div class="label">Total Staked</div>
+            <div id="statStaked" class="stat-value">₱0.00</div>
+          </div>
+          <div class="stat-item">
+            <div class="label">Pending Rewards</div>
+            <div id="statRewards" class="stat-value">₱0.00</div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="col-8">
+            <div class="card">
+              <div class="wallet-row">
+                <div>
+                  <h3>Wallet Overview</h3>
+                  <div id="walletBalance" class="wallet-balance">₱0.00</div>
+                  <div id="walletMeta" class="wallet-meta">No approved wallet balance yet</div>
+                </div>
+
+                <div class="upload-area">
+                  <div class="small-muted">Upload deposit receipt</div>
+                  <button class="upload-btn" onclick="openDepositModal(null)"><i class="fas fa-upload"></i> Upload Receipt</button>
+                  <input type="file" id="quickFileInput" accept="image/*" style="display:none">
+                </div>
+              </div>
+
+              <div style="margin-top:16px;">
+                <h4>Balance History</h4>
+                <div style="height:170px;"><canvas id="walletChart"></canvas></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:14px;">
+              <h4>Pending Deposit Receipts</h4>
+              <div id="pendingDepositsList"></div>
+
+              <div style="text-align:center;margin-top:12px;">
+                <button id="btnGoToPlans" class="btn-primary" style="display:none;" onclick="openTab('plans'); showToast('Choose a plan to activate your credited investment','success')">
+                  <i class="fas fa-layer-group"></i> Proceed to Staking Plans
+                </button>
+                <div class="note small-muted" style="margin-top:8px;">After admin approves and credits your wallet, this button will let you go activate your chosen plan.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-4">
+            <div class="card referral-card">
+              <h3><i class="fas fa-user-friends"></i> Referral Earnings</h3>
+              <div id="referralBalance" class="referral-value">₱0.00</div>
+              <div class="small-muted">Total earned: <strong id="totalCommission">₱0.00</strong></div>
+
+              <div class="link-input">
+                <input id="referralInput" readonly value="Generating..." />
+                <button onclick="copyReferral()"><i class="fas fa-copy"></i></button>
+              </div>
+              <div style="margin-top:10px;color:#eef">
+                <div>Total referrals: <strong id="rTotal">0</strong></div>
+                <div>Active referrals: <strong id="rActive">0</strong></div>
+              </div>
+            </div>
+
+            <div class="card" style="margin-top:12px;">
+              <h4>Quick Actions</h4>
+              <button class="btn-primary" style="width:100%;margin-top:8px" onclick="openDepositModal(null)"><i class="fas fa-upload"></i> Upload Receipt</button>
+              <button class="btn-ghost" style="width:100%;margin-top:8px" onclick="openTab('plans')"><i class="fas fa-layer-group"></i> View Staking Plans</button>
+              <button id="btnActivateInvestment" class="btn-primary" style="width:100%;margin-top:8px;display:none;" onclick="openTab('plans'); showToast('Wallet verified — choose a plan to activate','success')">
+                <i class="fas fa-rocket"></i> Activate Verified Investment
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DEPOSIT -->
+      <section id="deposit" class="section">
+        <div class="card">
+          <h3>Deposit Capital</h3>
+          <p class="small-muted">Select a plan (optional), upload your receipt image and add a note. Admin will verify and credit approved amount later.</p>
+
+          <div class="deposit-actions">
+            <label>Choose related plan (optional)</label>
+            <select id="depositPlan">
+              <option value="">General Deposit</option>
+              <option value="Basic">Basic</option>
+              <option value="Premium">Premium</option>
+              <option value="VIP">VIP</option>
+            </select>
+
+            <label style="margin-top:10px;">Receipt Image</label>
+            <input type="file" id="depositFileInput" accept="image/*">
+
+            <img id="depositPreview" class="preview" style="display:none;" alt="preview">
+
+            <label style="margin-top:10px;">Note (optional)</label>
+            <input id="depositNoteInput" placeholder="Payment reference or note">
+
+            <div style="text-align:right;margin-top:12px;">
+              <button class="btn-ghost" onclick="clearDepositForm()">Clear</button>
+              <button class="btn-primary" onclick="submitDepositForm()">Submit Receipt</button>
+            </div>
+          </div>
+
+          <div style="margin-top:18px;">
+            <h4>Your Submissions (Pending)</h4>
+            <div id="myDepositsList"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PLANS -->
+      <section id="plans" class="section">
+        <div class="card">
+          <h3>Staking Plans</h3>
+          <p class="small-muted">Choose a plan. You can upload a receipt first; admin will verify and then credit your wallet. Activation requires approved wallet balance.</p>
+
+          <div class="plan-grid">
+            <div class="plan-card basic">
+              <div>
+                <h3>Basic Subscription</h3>
+                <ul>
+                  <li>Entry: ₱2,500 – ₱50,000</li>
+                  <li>Duration: 50 days</li>
+                  <li>Cycle: Every 7 days</li>
+                  <li>Claim: <strong>20% each cycle</strong></li>
+                </ul>
+              </div>
+              <div class="plan-actions">
+                <button class="btn-ghost" onclick="openDepositModal('Basic')"><i class="fas fa-upload"></i> Select & Upload Receipt</button>
+                <button class="btn-primary" onclick="activatePlanFlow('Basic')">Activate Basic</button>
+              </div>
+            </div>
+
+            <div class="plan-card premium">
+              <div>
+                <h3>Premium Subscription</h3>
+                <ul>
+                  <li>Entry: ₱10,000 – ₱50,000</li>
+                  <li>Duration: 50 days</li>
+                  <li>Cycle: Every 7 days</li>
+                  <li>Claim: <strong>50% each cycle</strong></li>
+                </ul>
+              </div>
+              <div class="plan-actions">
+                <button class="btn-ghost" onclick="openDepositModal('Premium')"><i class="fas fa-upload"></i> Select & Upload Receipt</button>
+                <button class="btn-primary" onclick="activatePlanFlow('Premium')">Activate Premium</button>
+              </div>
+            </div>
+
+            <div class="plan-card vip">
+              <div>
+                <h3>VIP Subscription</h3>
+                <ul>
+                  <li>Entry: ₱50,000 – ₱250,000</li>
+                  <li>Duration: 45 days</li>
+                  <li>Cycle: One-time maturity</li>
+                  <li>Claim: <strong>150% profit</strong></li>
+                </ul>
+              </div>
+              <div class="plan-actions">
+                <button class="btn-ghost" onclick="openDepositModal('VIP')"><i class="fas fa-upload"></i> Select & Upload Receipt</button>
+                <button class="btn-primary" onclick="activatePlanFlow('VIP')">Activate VIP</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- WITHDRAW -->
+      <section id="withdraw" class="section">
+        <div class="card withdraw-form">
+          <h3>Request Withdrawal</h3>
+          <p class="small-muted">Available to withdraw: <strong id="withdrawable">₱0.00</strong></p>
+
+          <label>Method</label>
+          <select id="withdrawMethod" onchange="updateAccountPlaceholder()">
+            <option value="">Select</option>
+            <option value="GCash">GCash</option>
+            <option value="Bank Transfer">Bank Transfer</option>
+            <option value="USDT (Binance)">USDT (Binance)</option>
+            <option value="BTC Wallet">BTC Wallet</option>
+          </select>
+
+          <label>Account / Wallet</label>
+          <input id="withdrawAccount" placeholder="Enter account/wallet">
+
+          <label>Amount</label>
+          <input id="withdrawAmount" type="number" min="1" placeholder="₱">
+
+          <button class="withdraw-btn" onclick="submitWithdrawal()">Submit Withdrawal Request</button>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h4>Withdrawal History</h4>
+          <div id="withdrawalList" style="margin-top:12px;"></div>
+        </div>
+      </section>
+
+      <!-- REFERRAL -->
+      <section id="referral" class="section">
+        <div class="card referral-card">
+          <h3>Referral Program</h3>
+          <div id="referralMain" class="referral-value">₱0.00</div>
+          <p class="small-muted">Share your link. Earn a commission when referrals deposit and approved.</p>
+
+          <div class="link-input">
+            <input id="referralInput2" readonly value="Generating..." />
+            <button onclick="copyReferralLink2()"><i class="fas fa-copy"></i></button>
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:12px;">
+          <h4>Referral Stats</h4>
+          <div>Total referrals: <strong id="rTotal2">0</strong></div>
+          <div>Active referrals: <strong id="rActive2">0</strong></div>
+          <div>Referral deposits: <strong id="rValue2">₱0.00</strong></div>
+        </div>
+      </section>
+
+      <!-- FAQ -->
+      <section id="faq" class="section">
+        <div class="card">
+          <h3>Frequently Asked Questions</h3>
+
+          <div class="faq-item" onclick="toggleFAQ(this)"><h4>What is AlphaProfit?<span>+</span></h4><p>AlphaProfit is an AI-driven staking & trading platform offering algorithmic strategies across markets.</p></div>
+
+          <div class="faq-item" onclick="toggleFAQ(this)"><h4>How do I deposit?<span>+</span></h4><p>Upload your deposit receipt using the Deposit tab. Admin will verify and then credit the approved amount to your wallet.</p></div>
+
+          <div class="faq-item" onclick="toggleFAQ(this)"><h4>How long does verification take?<span>+</span></h4><p>Verification timelines are handled by admin; typically within 24–72 hours depending on payment method and evidence.</p></div>
+
+          <div class="faq-item" onclick="toggleFAQ(this)"><h4>Can I withdraw anytime?<span>+</span></h4><p>Yes — withdrawals are subject to approval and available balance (wallet + referral).</p></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Deposit Modal -->
+  <div id="depositModal" class="modal" aria-hidden="true">
+    <div class="box">
+      <h3 id="depositModalTitle">Upload Deposit Receipt</h3>
+      <p id="depositModalPlan" class="small-muted">Plan: General deposit</p>
+
+      <label style="margin-top:12px;">Receipt image</label>
+      <input id="depositModalFile" type="file" accept="image/*">
+      <img id="depositModalPreview" class="preview" style="display:none" alt="preview">
+
+      <label style="margin-top:10px;">Note (optional)</label>
+      <input id="depositModalNote" placeholder="Payment reference">
+
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:12px;">
+        <button class="btn-ghost" onclick="closeDepositModal()">Cancel</button>
+        <button class="btn-primary" onclick="submitDepositModal()">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- script -->
+  <script src="script.js"></script>
+</body>
+</html>

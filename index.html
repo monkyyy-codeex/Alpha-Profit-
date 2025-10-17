@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlphaProfit Login</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Poppins", sans-serif;
+    }
+
+    body {
+      height: 100vh;
+      overflow: hidden;
+      color: #fff;
+      background-color: #000;
+    }
+
+    .background {
+      position: absolute;
+      inset: 0;
+      background: url("back") no-repeat center center/cover;
+      filter: brightness(0.25) blur(3px);
+      z-index: -1;
+    }
+
+    .login-container {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(12px);
+      width: 370px;
+      border-radius: 20px;
+      padding: 45px 40px;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+      text-align: center;
+    }
+
+    .logo {
+      width: 120px;
+      margin-bottom: 10px;
+      filter: drop-shadow(0 0 15px cyan);
+    }
+
+    h1 {
+      background: linear-gradient(90deg, #00e0ff, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+    }
+
+    p.subtitle {
+      font-size: 13px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-group label {
+      font-size: 13px;
+      color: #aaa;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #222;
+      background: #111;
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    .input-group input:focus {
+      border-color: #00e0ff;
+      box-shadow: 0 0 10px #00e0ff40;
+    }
+
+    .btn-login {
+      width: 100%;
+      background: linear-gradient(90deg, #00e0ff, #8a2be2);
+      border: none;
+      padding: 12px;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn-login:hover {
+      opacity: 0.9;
+      box-shadow: 0 0 20px #00e0ff70;
+    }
+
+    .action-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .action-buttons button {
+      flex: 1;
+      background: #111;
+      border: 1px solid #00e0ff60;
+      color: #00e0ff;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .action-buttons button:hover {
+      background: #00e0ff20;
+    }
+
+    /* ✅ Sign Up Popup */
+    .popup-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.85);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    .popup {
+      background: rgba(15, 15, 15, 0.9);
+      border-radius: 20px;
+      padding: 30px;
+      width: 380px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(0, 255, 255, 0.4);
+      position: relative;
+    }
+
+    .popup h2 {
+      background: linear-gradient(90deg, #00e0ff, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 15px;
+    }
+
+    .close-popup {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      color: #00e0ff;
+      font-weight: bold;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .captcha-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #111;
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      border: 1px solid #222;
+    }
+
+    .captcha-text {
+      font-family: monospace;
+      font-size: 18px;
+      letter-spacing: 2px;
+      background: linear-gradient(90deg, #00e0ff, #8a2be2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      user-select: none;
+    }
+
+    .refresh-captcha {
+      cursor: pointer;
+      color: #00e0ff;
+      font-size: 14px;
+    }
+
+    .error-message,
+    .success-message {
+      font-size: 13px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .error-message {
+      color: #ff5757;
+    }
+
+    .success-message {
+      color: #00ff99;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="background"></div>
+
+  <div class="login-container">
+    <img src="alpha logo.png" alt="AlphaProfit Logo" class="logo" />
+    <h1>ALPHAPROFIT</h1>
+    <p class="subtitle">AI • CRYPTO • FOREX</p>
+
+    <form id="loginForm">
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="Enter your email" required />
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="Enter your password" required />
+      </div>
+
+      <button type="submit" class="btn-login">Log In</button>
+
+      <div class="action-buttons">
+        <button type="button" id="signUpBtn">Sign Up</button>
+        <button type="button" id="helpBtn">Help</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- 🔷 SIGNUP POPUP -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <span class="close-popup" id="closePopup">✖</span>
+      <h2>Create Account</h2>
+      <div class="error-message" id="signUpError"></div>
+      <div class="success-message" id="signUpSuccess"></div>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="signupEmail" placeholder="Enter your email" />
+      </div>
+
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="signupUser" placeholder="Choose a username" />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="signupPass" placeholder="Create password" />
+      </div>
+
+      <div class="input-group">
+        <label>Confirm Password</label>
+        <input type="password" id="signupConfirm" placeholder="Re-enter password" />
+      </div>
+
+      <div class="captcha-box">
+        <span class="captcha-text" id="captchaCode"></span>
+        <span class="refresh-captcha" id="refreshCaptcha">↻</span>
+      </div>
+
+      <div class="input-group">
+        <label>Enter Captcha</label>
+        <input type="text" id="captchaInput" placeholder="Type code above" />
+      </div>
+
+      <button class="btn-login" id="submitSignUp">Create Account</button>
+    </div>
+  </div>
+
+ <script>
+  const signUpPopup = document.getElementById("popupOverlay");
+  const openSignUpBtn = document.getElementById("signUpBtn");
+  const closePopup = document.getElementById("closePopup");
+
+  // open and close popup
+  openSignUpBtn.onclick = () => signUpPopup.style.display = "flex";
+  closePopup.onclick = () => signUpPopup.style.display = "none";
+  window.onclick = (e) => { if (e.target === signUpPopup) signUpPopup.style.display = "none"; };
+
+  // captcha generation
+  const captchaCode = document.getElementById("captchaCode");
+  const refreshCaptcha = document.getElementById("refreshCaptcha");
+  function generateCaptcha() {
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    let code = "";
+    for (let i = 0; i < 5; i++) code += chars.charAt(Math.floor(Math.random() * chars.length));
+    captchaCode.textContent = code;
+  }
+  generateCaptcha();
+  refreshCaptcha.onclick = generateCaptcha;
+
+  // 🧾 SIGN-UP LOGIC
+  document.getElementById("submitSignUp").addEventListener("click", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("signupEmail").value.trim();
+    const user = document.getElementById("signupUser").value.trim();
+    const pass = document.getElementById("signupPass").value.trim();
+    const confirm = document.getElementById("signupConfirm").value.trim();
+    const captchaInput = document.getElementById("captchaInput").value.trim();
+
+    const error = document.getElementById("signUpError");
+    const success = document.getElementById("signUpSuccess");
+    error.style.display = "none";
+    success.style.display = "none";
+
+    if (!email || !user || !pass || !confirm) {
+      error.textContent = "All fields are required.";
+      error.style.display = "block";
+      return;
+    }
+
+    if (pass !== confirm) {
+      error.textContent = "Passwords do not match.";
+      error.style.display = "block";
+      return;
+    }
+
+    if (captchaInput.toUpperCase() !== captchaCode.textContent) {
+      error.textContent = "Captcha incorrect. Try again.";
+      error.style.display = "block";
+      generateCaptcha();
+      return;
+    }
+
+    success.textContent = "Account created successfully!";
+    success.style.display = "block";
+    localStorage.setItem("AlphaProfitUser_" + user, JSON.stringify({ email, user, pass }));
+
+    setTimeout(() => {
+      signUpPopup.style.display = "none";
+      document.getElementById("signupEmail").value =
+        document.getElementById("signupUser").value =
+        document.getElementById("signupPass").value =
+        document.getElementById("signupConfirm").value =
+        document.getElementById("captchaInput").value = "";
+    }, 1500);
+  });
+
+  // 🟢 LOGIN LOGIC
+  document.getElementById("loginForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const email = document.getElementById("loginEmail").value.trim();
+    const password = document.getElementById("loginPassword").value.trim();
+
+    // Search user data from localStorage
+    let foundUser = null;
+    for (let key in localStorage) {
+      if (key.startsWith("AlphaProfitUser_")) {
+        const userData = JSON.parse(localStorage.getItem(key));
+        if (userData.email === email && userData.pass === password) {
+          foundUser = userData;
+          break;
+        }
+      }
+    }
+
+    if (foundUser) {
+      // Save session and redirect to dashboard
+      localStorage.setItem("AlphaProfitUser_session", foundUser.user);
+      alert("Login successful! Redirecting to dashboard...");
+      setTimeout(() => {
+        window.location.href = "dashboard.html";
+      }, 800);
+    } else {
+      alert("Invalid email or password. Please try again.");
+    }
+  });
+
+  // help button
+  document.getElementById("helpBtn").onclick = () =>
+    alert("Need help? Contact support@alphaprofit.com");
+</script>
+
+</body>
+</html>

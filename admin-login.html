@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlphaProfit Admin Login</title>
+
+  <link rel="stylesheet" href="admin-login.css" />
+  <script defer src="admin-login.js"></script>
+</head>
+
+<body>
+  <div class="background"></div>
+
+  <div class="login-container">
+    <img src="alpha logo.png" alt="AlphaProfit Logo" class="logo" />
+    <h1>ALPHAPROFIT ADMIN</h1>
+    <p class="subtitle">Secure Access • Transaction Oversight</p>
+
+    <form id="adminLoginForm">
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="adminEmail" placeholder="admin@alphaprofit.com" required />
+      </div>
+
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="adminPassword" placeholder="Enter your password" required />
+      </div>
+
+      <button type="submit" class="btn-login">Sign In</button>
+
+      <div class="extra-links">
+        <a href="#" id="forgotPassBtn">Forgot Password?</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- 🔷 FORGOT PASSWORD POPUP -->
+  <div class="popup-overlay" id="popupOverlay">
+    <div class="popup">
+      <span class="close-popup" id="closePopup">✖</span>
+      <h2>Password Recovery</h2>
+      <p class="desc">Enter your admin email. We’ll send a reset link (simulation).</p>
+
+      <div class="input-group">
+        <label>Email</label>
+        <input type="email" id="recoverEmail" placeholder="admin@alphaprofit.com" />
+      </div>
+
+      <button class="btn-login" id="recoverSubmit">Send Reset Link</button>
+    </div>
+  </div>
+
+</body>
+</html>
